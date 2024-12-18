@@ -69,7 +69,10 @@ public class FileService implements IFileService {
      * @return File corresponding to given id
      */
     public FileSystemResource getFile(Long id) {
-        return new FileSystemResource(Paths.get(fileMetadataRepository.findById(id).orElseThrow(() -> new DropLiteException(Constants.ERROR_MSG_FILE_NOT_FOUND)).getFilePath()));
+        return new FileSystemResource(Paths.get(fileMetadataRepository
+                .findById(id)
+                .orElseThrow(() -> new DropLiteException(Constants.ERROR_MSG_FILE_NOT_FOUND))
+                .getFilePath()));
     }
 
     /**
