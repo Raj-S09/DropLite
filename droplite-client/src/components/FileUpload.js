@@ -71,7 +71,13 @@ function FileUpload() {
 
     } catch (err) {
       setUploading(false);
-      setError('File upload failed. Please try again.');
+      // Extract and display the error message from the API response
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        // Fallback error message for unexpected cases
+        setError('File upload failed. Please try again.');
+      }
     }
   };
 

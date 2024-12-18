@@ -21,8 +21,8 @@ public class FileController {
 
     /**
      *
-     * @param file uploaded via api
-     * @return file metadata after uploading the file
+     * @param file to be uploaded via api
+     * @return ResponseEntity of uploaded file metadata
      */
     @PostMapping
     public ResponseEntity<ApiResponseDto<FileMetadata>> uploadFile(@RequestParam("file") MultipartFile file) {
@@ -32,7 +32,7 @@ public class FileController {
 
     /**
      *
-     * @return list of all uploaded files
+     * @return ResponseEntity with list of all uploaded files
      */
     @GetMapping
     public ResponseEntity<ApiResponseDto<List<FileMetadata>>> listFiles() {
@@ -42,8 +42,8 @@ public class FileController {
 
     /**
      *
-     * @param id uploaded file id
-     * @return file corresponding to given id
+     * @param id of uploaded file
+     * @return ResponseEntity of downloadable file
      */
     @GetMapping("/{id}")
     public ResponseEntity<FileSystemResource> downloadFile(@PathVariable Long id) {

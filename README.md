@@ -3,7 +3,7 @@
 Droplite is a full-stack application for basic file handling that consists of a backend and frontend, with MySQL running in Docker containers. The app is designed to manage file uploads and provides a simple interface for users to upload, list and download files.
 
 ## Features
-- **File Upload:** Upload files to the server.
+- **File Upload:** Upload files to the server (Only certain file types are allowed and the limit is set to 5MB).
 - **File Download:** Download files that have been uploaded.
 - **Database Integration:** A MySQL database stores metadata related to uploaded files.
 - **Dockerized:** The entire app, including MySQL, backend, and frontend, is containerized using Docker.

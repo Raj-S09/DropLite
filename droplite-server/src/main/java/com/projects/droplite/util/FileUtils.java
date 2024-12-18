@@ -16,7 +16,7 @@ public class FileUtils {
         return System.currentTimeMillis() + Constants.HYPHEN + file.getOriginalFilename();
     }
 
-    public static String getFileExtension(String filename) {
+    public static String getFileType(String filename) {
         if (filename == null || filename.isEmpty()) return Constants.BLANK;
         int lastIndexOfDot = filename.lastIndexOf(Constants.DOT);
         return (lastIndexOfDot == -1) ? Constants.BLANK : filename.substring(lastIndexOfDot + 1);

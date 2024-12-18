@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(DropLiteException.class)
     @ResponseBody
     public ResponseEntity<ApiResponseDto<?>> handleCustomException(Exception ex) {
         // Log the exception
