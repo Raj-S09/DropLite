@@ -1,0 +1,57 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: droplite-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: droplite_db
+      MYSQL_USER: droplite_user
+      MYSQL_PASSWORD: droplite_password
+    ports:
+      - "3306:3306"
+    networks:
+      - droplite-network
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+
+  frontend:
+    build: ./droplite-client
+    container_name: droplite-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - mysql
+    networks:
+      - droplite-network
+
+  backend:
+    build: ./droplite-server
+    container_name: droplite-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/droplite_db
+      SPRING_DATASOURCE_USERNAME: droplite_user
+      SPRING_DATASOURCE_PASSWORD: droplite_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      - mysql
+      - frontend
+    networks:
+      - droplite-network
+    volumes:
+      - ./droplite-server/src/main/resources/data/uploads:/app/src/main/resources/data/uploads
+
+
+networks:
+  droplite-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
