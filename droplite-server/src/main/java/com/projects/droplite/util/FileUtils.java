@@ -1,7 +1,7 @@
 package com.projects.droplite.util;
 
 import com.projects.droplite.constant.Constants;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +22,7 @@ public class FileUtils {
         return (lastIndexOfDot == -1) ? Constants.BLANK : filename.substring(lastIndexOfDot + 1);
     }
 
-    public static HttpHeaders getDownloadFileHeaders(FileSystemResource file) {
+    public static HttpHeaders getDownloadFileHeaders(Resource file) {
         // Prepare Content-Disposition header for file download
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"");
@@ -30,4 +30,5 @@ public class FileUtils {
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE);
         return headers;
     }
+
 }

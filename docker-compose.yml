@@ -43,10 +43,29 @@ services:
     depends_on:
       - mysql
       - frontend
+      - minio
+    networks:
+      - droplite-network
+
+  minio:
+    image: minio/minio
+    container_name: minio
+    ports:
+      - "9000:9000"  # S3-compatible API
+      - "9090:9090"  # MinIO Web UI (Console)
+    environment:
+      MINIO_ROOT_USER: droplite_user
+      MINIO_ROOT_PASSWORD: droplite_password
+    command: server /data --console-address ":9090"
     networks:
       - droplite-network
     volumes:
-      - ./droplite-server/src/main/resources/data/uploads:/app/src/main/resources/data/uploads
+      - minio-data:/data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 
 networks:
@@ -55,3 +74,4 @@ networks:
 
 volumes:
   mysql-data:
+  minio-data:

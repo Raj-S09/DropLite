@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DropLiteException.class)
     @ResponseBody
-    public ResponseEntity<ApiResponseDto<?>> handleCustomException(Exception ex) {
+    public ResponseEntity<ApiResponseDto> handleCustomException(Exception ex) {
         // Log the exception
         log.error(ex.getMessage(), ex);
 
