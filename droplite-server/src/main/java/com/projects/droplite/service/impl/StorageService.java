@@ -46,7 +46,7 @@ public class StorageService implements IStorageService {
     public void init() {
         s3 = S3Client.builder()
                 .endpointOverride(URI.create(s3Endpoint))
-                .region(Region.AWS_GLOBAL) // MinIO ignores region
+                .region(Region.of(region)) // MinIO ignores region
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(s3Username, s3Password)))
                 .forcePathStyle(true)
@@ -56,7 +56,6 @@ public class StorageService implements IStorageService {
     // Uploads file
     public String uploadFile(Resource resource) {
         String key = UPLOAD_DIRECTORY + Constants.SLASH + resource.getFilename();
-        log.debug("Uploading file: {}", key);
         try {
             s3.putObject(PutObjectRequest.builder()
                             .bucket(bucketName)
