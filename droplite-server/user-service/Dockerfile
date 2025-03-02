@@ -18,10 +18,10 @@ FROM openjdk:21-jdk-slim
 WORKDIR /app
 
 # Copy the built jar from the builder stage
-COPY --from=builder /app/target/discovery-server.jar app.jar
+COPY --from=builder /app/target/user-service.jar app.jar
 
 # Expose the port the application will run on
-EXPOSE 8761
+EXPOSE 8002
 
 # Run the application using Java 21
 CMD ["sh", "-c", "sleep 5 && java -jar app.jar"]

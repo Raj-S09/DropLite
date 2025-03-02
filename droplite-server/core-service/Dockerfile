@@ -1,5 +1,5 @@
 # Use Maven base image with OpenJDK 21 for building the project
-FROM maven:3.9.9-eclipse-temurin-21 AS builder
+FROM common-builder AS builder
 
 # Set the working directory
 WORKDIR /app
@@ -18,10 +18,10 @@ FROM openjdk:21-jdk-slim
 WORKDIR /app
 
 # Copy the built jar from the builder stage
-COPY --from=builder /app/target/discovery-server.jar app.jar
+COPY --from=builder /app/target/droplite-server.jar app.jar
 
 # Expose the port the application will run on
-EXPOSE 8761
+EXPOSE 8003
 
 # Run the application using Java 21
 CMD ["sh", "-c", "sleep 5 && java -jar app.jar"]

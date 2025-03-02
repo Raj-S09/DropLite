@@ -1,0 +1,19 @@
+server:
+  port: 8002
+
+spring:
+  application:
+    name: user-service
+
+# MySQL Configuration
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+  datasource:
+    url: jdbc:mysql://localhost:3306/droplite_db
+#    url: jdbc:mysql://mysql:3306/droplite_db
+    username: droplite_user
+    password: droplite_password
+    driver-class-name: com.mysql.cj.jdbc.Driver

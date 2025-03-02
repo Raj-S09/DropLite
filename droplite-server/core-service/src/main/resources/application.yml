@@ -1,0 +1,40 @@
+server:
+  port: 8003
+
+spring:
+  application:
+    name: file-service
+# Increase Spring's default File Upload Limit
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+  # MySQL Configuration
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+  datasource:
+    url: jdbc:mysql://localhost:3306/droplite_db
+    #    url: jdbc:mysql://mysql:3306/droplite_db
+    username: droplite_user
+    password: droplite_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+# File size limit in MB
+file:
+  upload:
+    max-size: 5
+    allowed-types: txt,pdf,json,jpg,jpeg,png,xls,xlsx,csv,doc,docx
+
+
+# S3 properties
+s3:
+  bucket:
+    name: droplite
+  region: ap-south-1
+  endpoint: http://localhost:9000
+  username: droplite_user
+  password: droplite_password
