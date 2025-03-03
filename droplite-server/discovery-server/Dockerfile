@@ -5,11 +5,10 @@ FROM maven:3.9.9-eclipse-temurin-21 AS builder
 WORKDIR /app
 
 # Copy the pom.xml and source code
-COPY pom.xml .
-COPY src ./src
+COPY ../ .
 
 # Build the project using Maven
-RUN mvn clean package
+RUN mvn clean package -DskipTests -pl  discovery-server -am
 
 # Use OpenJDK 21 runtime for the final image
 FROM openjdk:21-jdk-slim
@@ -18,10 +17,10 @@ FROM openjdk:21-jdk-slim
 WORKDIR /app
 
 # Copy the built jar from the builder stage
-COPY --from=builder /app/target/discovery-server.jar app.jar
+COPY --from=builder /app/discovery-server/target/discovery-server.jar app.jar
 
 # Expose the port the application will run on
 EXPOSE 8761
 
 # Run the application using Java 21
-CMD ["sh", "-c", "sleep 5 && java -jar app.jar"]
+CMD ["java", "-jar", "app.jar"]

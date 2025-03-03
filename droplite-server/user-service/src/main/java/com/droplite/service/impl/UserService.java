@@ -46,6 +46,7 @@ public class UserService implements IUserService {
                 .build();
         User savedUser = userRepository.save(user);
         userDto.setId(savedUser.getId());
+        userDto.setRole(savedUser.getRole());
         return userDto;
     }
 

@@ -20,33 +20,6 @@ services:
       start_period: 10s
       timeout: 5s
 
-  frontend:
-    build: ./droplite-client
-    container_name: droplite-frontend
-    ports:
-      - "80:80"
-    depends_on:
-      - mysql
-    networks:
-      - droplite-network
-
-  backend:
-    build: ./droplite-server
-    container_name: droplite-backend
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/droplite_db
-      SPRING_DATASOURCE_USERNAME: droplite_user
-      SPRING_DATASOURCE_PASSWORD: droplite_password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-    depends_on:
-      - mysql
-      - frontend
-      - minio
-    networks:
-      - droplite-network
-
   minio:
     image: minio/minio
     container_name: minio
@@ -67,6 +40,81 @@ services:
       timeout: 5s
       retries: 5
 
+  ui:
+    build: ./droplite-client
+    container_name: droplite-ui
+    ports:
+      - "80:80"
+    networks:
+      - droplite-network
+
+  eureka:
+    build:
+      context: ./droplite-server
+      dockerfile: ./discovery-server/Dockerfile
+    container_name: droplite-eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - droplite-network
+
+  gateway:
+    build:
+      context: ./droplite-server
+      dockerfile: ./gateway-service/Dockerfile
+    container_name: droplite-gateway
+    ports:
+      - "8080:8080"
+    networks:
+      - droplite-network
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://droplite-eureka:8761/eureka/
+
+  auth:
+    build:
+      context: ./droplite-server
+      dockerfile: ./auth-service/Dockerfile
+    container_name: droplite-auth
+    ports:
+      - "8001:8001"
+    networks:
+      - droplite-network
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://droplite-eureka:8761/eureka/
+
+  users:
+    build:
+      context: ./droplite-server
+      dockerfile: ./user-service/Dockerfile
+    container_name: droplite-users
+    ports:
+      - "8002:8002"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - droplite-network
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://droplite-eureka:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/droplite_db
+
+  server:
+    build:
+      context: ./droplite-server
+      dockerfile: ./core-service/Dockerfile
+    container_name: droplite-server
+    ports:
+      - "8003:8003"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    networks:
+      - droplite-network
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://droplite-eureka:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/droplite_db
 
 networks:
   droplite-network:
