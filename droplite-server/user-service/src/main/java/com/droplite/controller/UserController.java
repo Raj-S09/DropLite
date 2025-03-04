@@ -1,11 +1,10 @@
 package com.droplite.controller;
 
 import com.droplite.constant.UserConstants;
+import com.droplite.dto.ApiResponseDto;
 import com.droplite.dto.UserDto;
 import com.droplite.service.IUserService;
-import com.droplite.dto.ApiResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

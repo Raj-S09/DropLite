@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
@@ -29,6 +28,9 @@ public class JwtFilter implements WebFilter {
     @Value("${security.jwt.secret-key}")
     private String secretKey;
 
+    @Value("#{'${security.paths-to-skip}'.split(',')}")
+    private List<String> pathsToSkip;
+
     public static final String HEADER_AUTHORIZATION_PREFIX = "Bearer ";
     public static final String KEY_AUTHORITY = "role";
 
@@ -36,7 +38,11 @@ public class JwtFilter implements WebFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, @NonNull WebFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
-
+        String path = request.getURI().getPath();
+        // Skip authentication for whitelisted paths
+        if (pathsToSkip.contains(path)) {
+            return successHandler(exchange, chain, "guest","guest");
+        }
         if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
             return chain.filter(exchange);
         }
@@ -51,6 +57,10 @@ public class JwtFilter implements WebFilter {
         }
         String username = claims.getSubject();
         String role = claims.get(KEY_AUTHORITY, String.class);
+        return successHandler(exchange, chain, username, role);
+    }
+
+    private static Mono<Void> successHandler(ServerWebExchange exchange, WebFilterChain chain, String username, String role) {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 username, null, List.of(new SimpleGrantedAuthority(role)));
         SecurityContext securityContext = new SecurityContextImpl(authentication);

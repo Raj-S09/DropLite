@@ -40,6 +40,8 @@ security:
   jwt:
     secret-key: GlG4YF/5EQKJ44SaJtHEd//VJeffEZ0OUCYOKm/TYow=
     expire-in: 43200000 #12 hours in milli
+  paths-to-skip: /files/api/files/share
+
 
 eureka:
   client:

@@ -26,9 +26,9 @@ public class FileController {
      * @return ResponseEntity of uploaded file metadata
      */
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponseDto> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ApiResponseDto> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam String userId) {
         return ApiResponseDto.generateResponseEntity(
-                FileConstants.SUCCESS_MSG_FILE_UPLOADED_SUCCESSFULLY, fileService.uploadFile(file));
+                FileConstants.SUCCESS_MSG_FILE_UPLOADED_SUCCESSFULLY, fileService.uploadFile(file, userId));
     }
 
     /**
@@ -49,6 +49,16 @@ public class FileController {
     @GetMapping("/{id}")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long id) {
         Resource file = fileService.getFile(id);
+        return ResponseEntity.ok().headers(FileUtils.getDownloadFileHeaders(file)).body(file);
+    }
+
+    /**
+     * @param id of uploaded file
+     * @return ResponseEntity of downloadable file
+     */
+    @GetMapping("/share")
+    public ResponseEntity<Resource> downloadFile(@RequestParam Long id, @RequestParam String token) {
+        Resource file = fileService.getFile(id, token);
         return ResponseEntity.ok().headers(FileUtils.getDownloadFileHeaders(file)).body(file);
     }
 

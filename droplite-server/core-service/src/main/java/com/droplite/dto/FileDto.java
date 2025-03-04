@@ -3,9 +3,9 @@ package com.droplite.dto;
 import com.droplite.constant.DropliteConstants;
 import com.droplite.entity.FileMetadata;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.Instant;
 import java.util.Date;
 
 @Getter

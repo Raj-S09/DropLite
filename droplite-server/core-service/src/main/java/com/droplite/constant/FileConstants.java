@@ -17,4 +17,5 @@ public class FileConstants {
     public static final String ERROR_MSG_FILE_EXCEEDS_SIZE_LIMIT = "File should be under %s MB";
     public static final String ERROR_MSG_FILE_NOT_SUPPORTED = "File format not supported";
     public static final String ERROR_MSG_PAGE_SIZE_TOO_MUCH = "Can't display more than 50 results";
+    public static final String ERROR_MSG_FILE_DOWNLOAD_FAILED = "Failed to download file";
 }

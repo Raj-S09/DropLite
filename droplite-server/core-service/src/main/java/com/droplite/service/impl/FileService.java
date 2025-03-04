@@ -3,8 +3,10 @@ package com.droplite.service.impl;
 import com.droplite.constant.FileConstants;
 import com.droplite.dto.FileDto;
 import com.droplite.dto.SearchRequestDto;
+import com.droplite.entity.FileDownloadToken;
 import com.droplite.entity.FileMetadata;
 import com.droplite.exception.DropLiteException;
+import com.droplite.repository.FileDownloadTokenRepository;
 import com.droplite.repository.FileMetadataRepository;
 import com.droplite.service.IFileService;
 import com.droplite.service.IStorageService;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -29,6 +32,7 @@ import java.util.Optional;
 public class FileService implements IFileService {
 
     private final FileMetadataRepository fileMetadataRepository;
+    private final FileDownloadTokenRepository fileDownloadTokenRepository;
     private final IFileValidator validator;
     private final IStorageService storageService;
 
@@ -37,14 +41,14 @@ public class FileService implements IFileService {
      * @return FileMetadata object after uploading the file
      */
     @Override
-    public FileDto uploadFile(MultipartFile file) {
+    public FileDto uploadFile(MultipartFile file, String userId) {
         // Validate file
         validator.validateFile(file);
         try {
             // Upload file locally and get path
             String filePath = storageService.uploadFile(file.getResource());
             // Save metadata to DB and return it
-            return saveFileMetadataToDB(file, filePath);
+            return saveFileMetadataToDB(file, filePath, userId);
         } catch (Exception e) {
             throw new DropLiteException(FileConstants.ERROR_MSG_FILE_UPLOAD_FAILED, e);
         }
@@ -84,6 +88,20 @@ public class FileService implements IFileService {
     }
 
     /**
+     * @param id of the uploaded file
+     * @param token generated for shareable file
+     * @return File corresponding to given id
+     */
+    @Override
+    public Resource getFile(Long id, String token) {
+        Optional<FileDownloadToken> downloadToken = fileDownloadTokenRepository
+                .findByFileIdAndTokenAndExpireAtBefore(id, token, new Date());
+        if (downloadToken.isEmpty())
+            throw new DropLiteException(FileConstants.ERROR_MSG_FILE_DOWNLOAD_FAILED);
+        return getFile(id);
+    }
+
+    /**
      * @param id of the file to delete
      * @return deletes file and returns its path
      */
@@ -108,10 +126,11 @@ public class FileService implements IFileService {
      * @param path to save in filePath field
      * @return FileMetadata object saved in DB
      */
-    private FileDto saveFileMetadataToDB(MultipartFile file, String path) {
+    private FileDto saveFileMetadataToDB(MultipartFile file, String path, String userId) {
         FileMetadata metadata = FileMetadata.builder()
                 .fileName(file.getOriginalFilename())
                 .fileType(FileUtils.getFileType(file.getOriginalFilename()))
+                .createdBy(userId)
                 .filePath(path)
                 .build();
         FileMetadata savedFileMetadata = fileMetadataRepository.save(metadata);
