@@ -11,6 +11,7 @@ import com.droplite.repository.FileMetadataRepository;
 import com.droplite.service.IFileService;
 import com.droplite.service.IStorageService;
 import com.droplite.util.FileUtils;
+import com.droplite.util.SecurityUtils;
 import com.droplite.validator.IFileValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -119,6 +120,19 @@ public class FileService implements IFileService {
             throw new DropLiteException(FileConstants.ERROR_MSG_FILE_DELETE_FAILED, e);
         }
         return new FileDto(fileMetadata.get());
+    }
+
+    @Override
+    public String createShareableLink(Long id) {
+        Optional<FileDownloadToken> downloadToken = fileDownloadTokenRepository.findByFileId(id);
+        if (downloadToken.isEmpty()) {
+            FileDownloadToken newToken = FileDownloadToken.builder()
+                    .fileId(id)
+                    .token(SecurityUtils.generateToken())
+                    .build();
+            return fileDownloadTokenRepository.save(newToken).getToken();
+        }
+        return downloadToken.get().getToken();
     }
 
     /**

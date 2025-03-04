@@ -18,4 +18,5 @@ public interface IFileService {
 
     FileDto deleteFile(Long id);
 
+    String createShareableLink(Long id);
 }

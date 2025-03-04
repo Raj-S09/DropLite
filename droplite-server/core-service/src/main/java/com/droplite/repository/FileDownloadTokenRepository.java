@@ -10,4 +10,6 @@ public interface FileDownloadTokenRepository extends JpaRepository<FileDownloadT
 
     Optional<FileDownloadToken> findByFileIdAndTokenAndExpireAtBefore(Long fileId, String token, Date now);
 
+    Optional<FileDownloadToken> findByFileId(Long fileId);
+
 }

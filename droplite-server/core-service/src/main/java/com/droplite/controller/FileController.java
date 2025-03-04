@@ -53,16 +53,6 @@ public class FileController {
     }
 
     /**
-     * @param id of uploaded file
-     * @return ResponseEntity of downloadable file
-     */
-    @GetMapping("/share")
-    public ResponseEntity<Resource> downloadFile(@RequestParam Long id, @RequestParam String token) {
-        Resource file = fileService.getFile(id, token);
-        return ResponseEntity.ok().headers(FileUtils.getDownloadFileHeaders(file)).body(file);
-    }
-
-    /**
      * @param id of file to be deleted
      * @return ResponseEntity of deleted file
      */
@@ -70,6 +60,15 @@ public class FileController {
     public ResponseEntity<ApiResponseDto> deleteFile(@PathVariable Long id) {
         return ApiResponseDto.generateResponseEntity(
                 FileConstants.SUCCESS_MSG_FILES_DELETED_SUCCESSFULLY, fileService.deleteFile(id));
+    }
+
+    /**
+     * @param id of uploaded file
+     * @return ResponseEntity of downloadable file
+     */
+    @GetMapping("/share")
+    public ResponseEntity<String> shareFile(@RequestParam Long id) {
+       return ResponseEntity.ok(fileService.createShareableLink(id));
     }
 
 }
